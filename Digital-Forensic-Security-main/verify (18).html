@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  /* ===== Upload Evidence Page ===== */
+  .upload-wrapper {
+    width: 100%;
+    background:
+      radial-gradient(1100px 520px at -15% -20%, color-mix(in oklab, var(--brand) 22%, transparent), transparent 60%),
+      radial-gradient(1100px 520px at 110% 120%, color-mix(in oklab, var(--blue) 18%, transparent), transparent 60%);
+    border-radius: 18px;
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  /* Hero Section */
+  .upload-hero {
+    background: linear-gradient(135deg, var(--brand), var(--blue));
+    color: var(--navy);
+    text-align: center;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.3);
+    padding: 2rem 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .upload-hero h2 {
+    font-weight: 900;
+    font-size: 2rem;
+    margin-bottom: .5rem;
+  }
+  .upload-hero p {
+    color: #022232;
+    font-size: 1.05rem;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+
+  /* Upload Card */
+  .upload-card {
+    background: var(--card);
+    border: 1px solid var(--ring);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.3);
+    max-width: 550px;
+    margin: 0 auto;
+    padding: 2rem 1.75rem;
+    text-align: center;
+  }
+
+  /* Drop Zone */
+  .drop-zone {
+    border: 2px dashed var(--blue);
+    border-radius: 14px;
+    padding: 2.5rem 1rem;
+    cursor: pointer;
+    transition: all .3s ease;
+    color: var(--muted);
+    font-size: 1.05rem;
+    background: color-mix(in oklab, var(--bg) 95%, black 5%);
+  }
+  .drop-zone:hover {
+    border-color: var(--yellow);
+    background: rgba(255,193,7,.06);
+  }
+  .drop-zone.dragover {
+    border-color: var(--brand);
+    background: rgba(58,208,255,.08);
+  }
+
+  .file-name {
+    color: var(--blue);
+    font-weight: 700;
+    margin-top: 1rem;
+    word-break: break-all;
+  }
+
+  /* Upload Button */
+  .btn-upload {
+    background: var(--yellow);
+    color: var(--navy);
+    border: none;
+    border-radius: 40px;
+    padding: 0.9rem 2.5rem;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,.18);
+    transition: transform .25s ease, background .25s ease;
+    margin-top: 1.8rem;
+  }
+  .btn-upload:hover {
+    background: var(--bright-yellow);
+    transform: translateY(-2px);
+  }
+
+  /* Progress Bar */
+  .progress-wrap {
+    display: none;
+    width: 100%;
+    height: 10px;
+    margin-top: 1.5rem;
+    background: rgba(255,255,255,.1);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-inner {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--brand), var(--yellow));
+    transition: width .3s ease;
+  }
+
+  @media (max-width: 600px) {
+    .upload-card { padding: 1.5rem 1rem; }
+    .upload-hero h2 { font-size: 1.6rem; }
+  }
+</style>
+
+<div class="upload-wrapper">
+  <!-- Hero -->
+  <section class="upload-hero">
+    <h2>📤 Upload Digital Evidence</h2>
+    <p>
+      Select or drag a file to upload. It will be encrypted, hashed, and recorded on the blockchain for secure verification.
+    </p>
+  </section>
+
+  <!-- Upload Card -->
+  <div class="upload-card">
+    <form method="POST" enctype="multipart/form-data" onsubmit="showProgressBar()">
+      <div id="dropZone" class="drop-zone" role="button" tabindex="0">
+        <div style="font-size:1.8rem; margin-bottom:.25rem;">📁</div>
+        <div><strong>Click to choose a file</strong> or drag & drop it here</div>
+        <small style="color:#999;margin-top:.35rem;">Supported: images, PDFs, text, archives</small>
+      </div>
+
+      <input type="file" id="fileInput" name="file" required style="display:none;" onchange="previewFileName(event)">
+      <p id="file-name" class="file-name"></p>
+
+      <button type="submit" class="btn-upload">🔒 Upload & Secure</button>
+
+      <!-- Progress -->
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-inner" id="progressInner"></div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const dropZone = document.getElementById('dropZone');
+  const fileName = document.getElementById('file-name');
+
+  // File name preview
+  function previewFileName(event) {
+    const file = event.target.files[0];
+    fileName.textContent = file ? `📄 ${file.name}` : '';
+  }
+
+  // Click / keyboard open
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      fileInput.click();
+    }
+  });
+
+  // Drag & drop
+  ['dragenter', 'dragover'].forEach(evt =>
+    dropZone.addEventListener(evt, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.add('dragover');
+    })
+  );
+  ['dragleave', 'drop'].forEach(evt =>
+    dropZone.addEventListener(evt, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove('dragover');
+    })
+  );
+  dropZone.addEventListener('drop', e => {
+    const files = e.dataTransfer.files;
+    if (files && files.length) {
+      fileInput.files = files;
+      previewFileName({ target: fileInput });
+    }
+  });
+
+  // Progress bar animation
+  function showProgressBar() {
+    const bar = document.getElementById('progressWrap');
+    const inner = document.getElementById('progressInner');
+    if (!bar || !inner) return;
+    bar.style.display = 'block';
+    inner.style.width = '0%';
+    let w = 0;
+    const t = setInterval(() => {
+      w += 12;
+      inner.style.width = Math.min(w, 100) + '%';
+      if (w >= 100) clearInterval(t);
+    }, 120);
+  }
+</script>
+
+{% endblock %}

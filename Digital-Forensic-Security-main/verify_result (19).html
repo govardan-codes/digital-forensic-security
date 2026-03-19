@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* ===== VERIFY EVIDENCE PAGE ===== */
+.verify-rail {
+  width: 100%;
+  background:
+    radial-gradient(1100px 520px at -10% -10%, rgba(255,193,7,.10), transparent 60%),
+    radial-gradient(1100px 520px at 110% 110%, rgba(0,0,139,.06), transparent 60%);
+  border-radius: 18px;
+  padding: 3rem 1.5rem 4rem 1.5rem;
+}
+
+/* ===== Header ===== */
+.verify-header {
+  text-align: center;
+  background: linear-gradient(90deg, var(--blue), var(--navy));
+  color: #fff;
+  border-radius: 18px;
+  padding: 2.2rem 1.5rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+  position: relative;
+  margin-bottom: 2.5rem;
+}
+.verify-header::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(900px 360px at -5% -10%, rgba(255,193,7,.25), transparent 60%),
+              radial-gradient(900px 360px at 105% 110%, rgba(255,255,255,.10), transparent 60%);
+  pointer-events: none;
+}
+.verify-header h2 {
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 0 0 0.6rem 0;
+}
+.verify-header p {
+  font-size: 1.05rem;
+  color: #e7ebff;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ===== Form Card ===== */
+.verify-card {
+  background: #fff;
+  border: 1px solid var(--ring);
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0,0,0,.08);
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 2.2rem 2rem 2.8rem 2rem;
+  text-align: center;
+}
+.verify-card label {
+  display: block;
+  text-align: left;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 0.5rem;
+}
+.verify-card select {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+  font-size: 1rem;
+  background: #fffbe6;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.verify-card select:focus {
+  outline: none;
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(255,193,7,0.25);
+}
+.verify-card button {
+  background: var(--yellow);
+  color: var(--navy);
+  font-weight: 800;
+  font-size: 1.05rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.9rem 1.8rem;
+  margin-top: 1.4rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  transition: background 0.25s ease, transform 0.25s ease;
+  cursor: pointer;
+}
+.verify-card button:hover {
+  background: var(--bright-yellow);
+  transform: translateY(-2px);
+}
+
+/* ===== Decorative badges (optional highlights) ===== */
+.badges {
+  display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+  margin-top: 2rem;
+}
+.badge {
+  background: rgba(0,0,139,.08);
+  color: var(--navy);
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: .9rem;
+  border: 1px solid rgba(0,0,139,.12);
+}
+.badge.yellow { background: var(--yellow); color: var(--navy); border-color: transparent; }
+
+@media (max-width: 640px){
+  .verify-header h2 { font-size: 1.6rem; }
+  .verify-card { padding: 1.8rem 1.2rem; }
+}
+</style>
+
+<div class="verify-rail">
+  <!-- Header -->
+  <div class="verify-header">
+    <h2>🔍 Verify Evidence Integrity</h2>
+    <p>Ensure your digital evidence remains untampered by verifying its cryptographic hash against the blockchain ledger.</p>
+  </div>
+
+  <!-- Form Card -->
+  <div class="verify-card">
+    <form method="POST">
+      <label for="evidence_id">Select Evidence ID:</label>
+      <select id="evidence_id" name="evidence_id" required>
+        {% for e in evidence_list %}
+          <option value="{{ e.evidence_id }}">{{ e.evidence_id }} — {{ e.file_name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit">Verify</button>
+    </form>
+
+    <div class="badges">
+      <span class="badge yellow">Integrity Check</span>
+      <span class="badge">Immutable Ledger</span>
+      <span class="badge">Blockchain Proof</span>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

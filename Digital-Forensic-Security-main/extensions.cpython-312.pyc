@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  /* ======= Verifier Dashboard (Same Aesthetic as Home & About) ======= */
+
+  .verifier-rail {
+    width: 100%;
+    background:
+      radial-gradient(1100px 520px at -10% -10%, rgba(255,193,7,.10), transparent 60%),
+      radial-gradient(1100px 520px at 110% 110%, rgba(0,0,139,.06), transparent 60%);
+    border-radius: 18px;
+  }
+
+  /* --- Hero --- */
+  .hero {
+    position: relative;
+    background: linear-gradient(90deg, var(--blue), var(--navy));
+    color: #fff;
+    border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, .20);
+    padding: 38px 28px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(900px 360px at -5% -10%, rgba(255,193,7,.20), transparent 60%),
+      radial-gradient(900px 360px at 105% 110%, rgba(255,255,255,.10), transparent 60%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-weight: 800;
+    font-size: 1.9rem;
+    margin-bottom: .35rem;
+  }
+  .hero p {
+    color: #e7ebff;
+    font-size: 1.05rem;
+    margin: 0 auto;
+    max-width: 900px;
+  }
+
+  /* --- Stats --- */
+  .stats-grid {
+    margin-top: 26px;
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+  .stat {
+    background: #fff;
+    border: 1px solid var(--ring);
+    border-radius: 16px;
+    padding: 20px 20px 18px 20px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.06);
+    text-align: center;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .stat:hover { transform: translateY(-4px); box-shadow: 0 16px 36px rgba(0,0,0,.10); }
+  .stat h3 { color: var(--blue); font-weight: 800; margin-bottom: .25rem; }
+  .stat .value { font-size: 2.2rem; font-weight: 900; color: var(--navy); }
+  .stat .desc { font-size: .95rem; color: var(--muted); }
+
+  /* --- Action Buttons --- */
+  .actions {
+    margin: 32px 0 20px 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .btn-action {
+    background: var(--yellow);
+    color: var(--navy);
+    padding: 0.9rem 1.9rem;
+    font-weight: 800;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 2px solid var(--yellow);
+    box-shadow: 0 10px 24px rgba(0,0,0,.12);
+    transition: all .25s ease;
+  }
+  .btn-action:hover {
+    background: var(--bright-yellow);
+    transform: translateY(-2px);
+  }
+
+  /* --- Functional Sections --- */
+  .grid-sections {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 18px;
+    margin-top: 16px;
+  }
+
+  /* Recent Verifications Table */
+  .table-card {
+    background: #fff;
+    border: 1px solid var(--ring);
+    border-radius: 16px;
+    box-shadow: 0 10px 26px rgba(0,0,0,.08);
+    padding: 20px;
+  }
+  .table-card h2 {
+    color: var(--blue);
+    font-weight: 800;
+    margin-bottom: .75rem;
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: .9rem;
+  }
+  .search input {
+    flex: 1;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--ring);
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--ring);
+  }
+  th {
+    background: rgba(255,193,7,.15);
+    color: var(--navy);
+    font-weight: 800;
+  }
+  td.status-genuine { color: #008000; font-weight: 700; }
+  td.status-tampered { color: #b00020; font-weight: 700; }
+
+  /* Ledger Activity Preview */
+  .feed {
+    background: #fff;
+    border: 1px solid var(--ring);
+    border-radius: 16px;
+    box-shadow: 0 10px 26px rgba(0,0,0,.08);
+    padding: 20px;
+  }
+  .feed h2 {
+    color: var(--blue);
+    font-weight: 800;
+    margin-bottom: .75rem;
+  }
+  .feed-item {
+    border-left: 4px solid var(--yellow);
+    background: rgba(255,193,7,.06);
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .feed-item span { color: var(--muted); font-size: .95rem; }
+
+  /* Performance Bar */
+  .perf-card {
+    margin-top: 18px;
+    background: #fff;
+    border: 1px solid var(--ring);
+    border-radius: 16px;
+    box-shadow: 0 10px 26px rgba(0,0,0,.08);
+    padding: 20px;
+  }
+  .perf-card h2 {
+    color: var(--blue);
+    font-weight: 800;
+    margin-bottom: .75rem;
+  }
+.bar {
+  width: 100%;
+  height: 20px;
+  border-radius: 999px;
+  background: rgba(0,0,139,.08);
+  overflow: hidden;
+  position: relative;
+}
+.bar .auth {
+  height: 100%;
+  background: var(--yellow);
+  transition: width .6s ease;
+}
+
+
+
+  @media (max-width: 1100px){
+    .grid-sections { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="verifier-rail">
+  <!-- Hero -->
+  <div class="hero card">
+    <h1>🔍 Verifier Dashboard</h1>
+    <p>Welcome <strong>{{ current_user.full_name }}</strong> — your secure hub for validating evidence integrity, monitoring verification trends, and reading blockchain activity.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat">
+      <h3>Total Verifications</h3>
+      <div class="value">{{ total_verifications }}</div>
+      <div class="desc">All checks performed in the system.</div>
+    </div>
+    <div class="stat">
+      <h3>Authentic Files</h3>
+      <div class="value">{{ genuine_count }}</div>
+      <div class="desc">Files verified as genuine.</div>
+    </div>
+    <div class="stat">
+      <h3>Tampered Files</h3>
+      <div class="value">{{ tampered_count }}</div>
+      <div class="desc">Evidence flagged as modified.</div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="actions">
+    <a href="{{ url_for('verifier_bp.verify_evidence') }}" class="btn-action">⚙️ Verify Evidence</a>
+    <a href="{{ url_for('verifier_bp.view_ledger') }}" class="btn-action">⛓️ View Blockchain Ledger</a>
+  </div>
+
+  <!-- Functional Sections -->
+  <div class="grid-sections">
+    <!-- Left: Recent Verifications -->
+    <div class="table-card">
+      <h2>🧾 Recent Verifications</h2>
+      <div class="search">
+        <input type="text" placeholder="Search by filename or result..." id="verifySearch" onkeyup="filterTable()">
+      </div>
+      <table id="verifyTable">
+        <thead>
+          <tr>
+            <th>Evidence</th>
+            <th>Result</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for v in recent_verifications %}
+          <tr>
+            <td>{{ v.evidence.file_name }}</td>
+            <td class="status-{{ v.result }}">{{ v.result|capitalize }}</td>
+            <td>{{ v.verified_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3">No recent verifications found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Right: Ledger Feed -->
+    <div class="feed">
+      <h2>⛓️ Blockchain Activity</h2>
+      {% for block in recent_blocks %}
+      <div class="feed-item">
+        <strong>{{ block.action_type|replace('_',' ')|capitalize }}</strong><br>
+        <span>{{ block.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+      </div>
+      {% else %}
+      <p style="color:var(--muted);">No recent blockchain events.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+
+<!-- Small JS filter -->
+<script>
+  function filterTable() {
+    const input = document.getElementById("verifySearch").value.toLowerCase();
+    const rows = document.querySelectorAll("#verifyTable tbody tr");
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(input) ? "" : "none";
+    });
+  }
+</script>
+
+{% endblock %}

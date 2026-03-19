@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* ===== USER MANAGEMENT PAGE ===== */
+.users-wrap {
+  width: 100%;
+  background:
+    radial-gradient(1100px 520px at -10% -10%, rgba(255,193,7,.10), transparent 60%),
+    radial-gradient(1100px 520px at 110% 110%, rgba(0,0,139,.08), transparent 60%);
+  border-radius: 18px;
+  padding: 2.5rem 1.5rem 3rem 1.5rem;
+}
+
+/* ===== Header ===== */
+.users-hero {
+  background: linear-gradient(90deg, var(--blue), var(--navy));
+  color: #fff;
+  border-radius: 18px;
+  padding: 2.2rem 1.8rem;
+  box-shadow: 0 14px 36px rgba(0,0,0,.25);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+  margin-bottom: 2.5rem;
+}
+.users-hero::after {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(900px 360px at -5% -10%, rgba(255,193,7,.25), transparent 60%),
+    radial-gradient(900px 360px at 105% 110%, rgba(255,255,255,.12), transparent 60%);
+  pointer-events: none;
+}
+.users-hero h2 {
+  font-weight: 900;
+  font-size: 2rem;
+  margin: 0;
+  z-index: 1;
+}
+.users-hero .btn-primary {
+  background: var(--yellow);
+  color: var(--navy);
+  font-weight: 800;
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  text-decoration: none;
+  transition: background 0.25s ease, transform 0.25s ease;
+  z-index: 1;
+}
+.users-hero .btn-primary:hover {
+  background: var(--bright-yellow);
+  transform: translateY(-2px);
+}
+
+/* ===== Table Card ===== */
+.table-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 10px 28px rgba(0,0,0,.25);
+  overflow-x: auto;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.96rem;
+}
+.data-table thead th {
+  background: linear-gradient(90deg, var(--blue), var(--navy));
+  color: #fff;
+  text-align: left;
+  padding: 0.9rem 1rem;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+.data-table tbody td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  color: var(--text);
+}
+.data-table tbody tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+.data-table tbody tr:hover { background: rgba(0,0,0,0.06); transition: .25s; }
+
+/* ===== Status Badges ===== */
+.status {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.status.active { background: rgba(0,230,118,0.12); color: #00e676; }
+.status.inactive { background: rgba(255,82,82,0.12); color: #ff5252; }
+
+/* ===== Small Buttons ===== */
+.btn-small {
+  display: inline-block;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.25s ease;
+}
+.btn-small.toggle {
+  background: var(--yellow);
+  color: var(--navy);
+  border: 1px solid var(--yellow);
+}
+.btn-small.toggle:hover {
+  background: var(--bright-yellow);
+  transform: translateY(-2px);
+}
+.btn-small.delete {
+  background: #ff4b5c;
+  color: #fff;
+  border: 1px solid #ff4b5c;
+  margin-left: 0.4rem;
+}
+.btn-small.delete:hover {
+  background: #e84150;
+  transform: translateY(-2px);
+}
+
+/* ===== Empty Message ===== */
+.empty-msg {
+  color: var(--muted);
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* ===== Animation ===== */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+tbody tr { animation: fadeInUp .4s ease forwards; }
+
+@media (max-width: 720px) {
+  .users-hero { flex-direction: column; text-align: center; gap: 1rem; }
+  .users-hero h2 { font-size: 1.7rem; }
+  .btn-small { margin-bottom: 0.4rem; }
+}
+</style>
+
+<div class="users-wrap">
+  <!-- Header -->
+  <div class="users-hero">
+    <h2>👥 User Management</h2>
+    <a href="{{ url_for('admin_bp.add_user') }}" class="btn-primary">➕ Add New User</a>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    {% if users %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Created On</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td><code>#{{ u.user_id }}</code></td>
+          <td>{{ u.full_name }}</td>
+          <td>{{ u.email }}</td>
+          <td>
+            {% if u.role == 'admin' %}
+              <span style="color:var(--yellow);font-weight:700;">👑 Admin</span>
+            {% elif u.role == 'investigator' %}
+              <span style="color:var(--blue);font-weight:700;">🧠 Investigator</span>
+            {% elif u.role == 'verifier' %}
+              <span style="color:#00e676;font-weight:700;">🔎 Verifier</span>
+            {% else %}
+              <span style="color:var(--muted);">{{ u.role|capitalize }}</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if u.is_active %}
+              <span class="status active">Active</span>
+            {% else %}
+              <span class="status inactive">Inactive</span>
+            {% endif %}
+          </td>
+          <td>{{ u.created_at.strftime('%d %b %Y') if u.created_at else '-' }}</td>
+          <td>
+            <a href="{{ url_for('admin_bp.toggle_user_status', user_id=u.user_id) }}" class="btn-small toggle">
+              {% if u.is_active %}Deactivate{% else %}Activate{% endif %}
+            </a>
+            <a href="{{ url_for('admin_bp.delete_user', user_id=u.user_id) }}" 
+               class="btn-small delete" onclick="return confirm('Delete {{ u.full_name }}?');">
+              Delete
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="empty-msg">No investigators or verifiers found.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

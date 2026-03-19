@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  /* ===== Home page styles (uses variables from base.html) ===== */
+
+  /* Layout rails to feel immersive but stay readable */
+  .home-rail{
+    width:100%;
+    background:
+      radial-gradient(1100px 520px at -10% -10%, rgba(255,193,7,.10), transparent 60%),
+      radial-gradient(1100px 520px at 110% 110%, rgba(0,0,139,.06), transparent 60%);
+    border-radius:18px;
+  }
+
+    /* ===== Hero Section Refinement ===== */
+    .hero {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    padding: 3rem 3rem;
+    background: linear-gradient(90deg, var(--blue), var(--navy));
+    color: #fff;
+    border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+    position: relative;
+    }
+
+    .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(900px 360px at -5% -10%, rgba(255, 193, 7, 0.2), transparent 60%),
+                radial-gradient(900px 360px at 105% 110%, rgba(255, 255, 255, 0.12), transparent 60%);
+    pointer-events: none;
+    }
+
+    .hero-text {
+    z-index: 1;
+    }
+
+    .hero h1 {
+    margin: 0 0 1rem 0;
+    font-size: 2.3rem;
+    line-height: 1.2;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .hero .tagline {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #e9ecff;
+    margin-bottom: 2rem;
+    }
+
+    .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    }
+
+    /* --- Buttons --- */
+    .btn-primary,
+    .btn-outline {
+    display: inline-block;
+    text-decoration: none !important; /* ✅ removes underline */
+    font-weight: 700;
+    padding: 0.75rem 1.6rem;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+    font-size: 1rem;
+    }
+
+    .btn-primary {
+    background: var(--yellow);
+    color: var(--navy);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    border: 2px solid var(--yellow);
+    }
+    .btn-primary:hover {
+    background: var(--bright-yellow);
+    transform: translateY(-2px);
+    }
+
+    .btn-outline {
+    background: transparent;
+    color: #fff;
+    border: 2px solid #fff;
+    }
+    .btn-outline:hover {
+    background: #fff;
+    color: var(--navy);
+    transform: translateY(-2px);
+    }
+
+    /* --- Hero Image Fix --- */
+    .hero-media {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .hero-media img {
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    object-fit: cover; /* ✅ ensures it fills space nicely */
+    }
+
+    /* --- Responsive Fixes --- */
+    @media (max-width: 1000px) {
+    .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 2.5rem 1.5rem;
+    }
+    .hero-media img {
+        max-width: 420px;
+        margin-top: 1.5rem;
+    }
+    }
+
+
+
+  /* ---------- FEATURES ---------- */
+  .features{ padding:28px 6px 8px 6px; }
+  .section-title{
+    text-align:center; color:#0c1740; font-weight:900; letter-spacing:.3px;
+    font-size:1.6rem; margin:12px 0 18px 0;
+  }
+  .features-grid{
+    display:grid; gap:16px;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .feature{
+    background:#fff; border:1px solid var(--ring);
+    border-radius:16px; padding:18px 18px;
+    box-shadow:0 12px 28px rgba(0,0,0,.06);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .feature:hover{ transform:translateY(-4px); box-shadow:0 18px 36px rgba(0,0,0,.10); }
+  .feature .icon{
+    width:44px;height:44px;border-radius:12px;
+    display:grid;place-items:center;
+    background:var(--yellow); color:var(--navy); font-weight:900; font-size:1.2rem;
+    box-shadow:0 8px 18px rgba(0,0,0,.12); margin-bottom:10px;
+  }
+  .feature h3{ margin:.2rem 0 .35rem 0; color:#0c1740; }
+  .feature p{ margin:.25rem 0 0 0; color:var(--muted); }
+
+  /* ---------- ROLES ---------- */
+  .roles{
+    margin-top:14px;
+    background:
+      linear-gradient(90deg, var(--yellow) 0%, var(--yellow) 50%, var(--blue) 50%, var(--navy) 100%);
+    border-radius:18px;
+    padding:26px 22px 30px 22px;
+    color:#fff;
+    box-shadow:0 16px 40px rgba(0,0,0,.14);
+  }
+  .roles .section-title{ color:#fff; margin-top:4px; }
+  .roles-grid{
+    display:grid; gap:16px; margin-top:14px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .role{
+    background:#fff; color:var(--text); border:1px solid var(--ring);
+    border-radius:16px; padding:18px 18px;
+    box-shadow:0 10px 26px rgba(0,0,0,.08);
+  }
+  .role h3{ margin:.1rem 0 .5rem 0; color:var(--blue); }
+  .role p{ color:var(--muted); }
+
+  /* ---------- CTA ---------- */
+  .cta{
+    margin-top:16px;
+    background:linear-gradient(90deg, var(--blue), var(--navy));
+    border-radius:18px; color:#fff;
+    padding:26px 22px 28px 22px;
+    display:grid; place-items:center; text-align:center;
+    box-shadow:0 16px 40px rgba(0,0,0,.18);
+  }
+  .cta h2{ margin:.1rem 0 .5rem 0; font-size:1.8rem; font-weight:900; }
+  .cta p{ margin:0 0 16px 0; color:#e7ebff; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1200px){
+    .features-grid{ grid-template-columns: repeat(2, 1fr); }
+    .roles-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 900px){
+    .hero{ grid-template-columns: 1fr; text-align:left; }
+    .hero-media{ justify-content:flex-start; }
+  }
+  @media (max-width: 620px){
+    .features-grid{ grid-template-columns: 1fr; }
+    .roles-grid{ grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="home-rail">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Secure Digital Evidence. Verify with Confidence.</h1>
+      <p class="tagline">
+        A next-generation platform for Admins, Investigators, and Verifiers to manage, encrypt,
+        and validate digital evidence with <strong>authentication-first</strong> controls, <strong>integrity hashing</strong>,
+        and an <strong>immutable audit ledger</strong>.
+      </p>
+      <div class="hero-buttons">
+        <a href="{{ url_for('auth_bp.login') }}" class="btn-primary">🔐 Login to Dashboard</a>
+        <a href="{{ url_for('main_bp.about') }}" class="btn-outline">Learn More</a>
+      </div>
+    </div>
+
+    <div class="hero-media">
+      <div class="imgwrap">
+        <img src="{{ url_for('static', filename='img/security.png') }}" alt="Forensic Security Illustration">
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <h2 class="section-title">Core Capabilities</h2>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="icon">🧾</div>
+        <h3>Evidence Upload</h3>
+        <p>Encrypt at-rest with optimized crypto; capture metadata and chain-of-custody at ingestion.</p>
+      </div>
+
+      <div class="feature">
+        <div class="icon">🔍</div>
+        <h3>Authenticity Verification</h3>
+        <p>Recompute hashes and cross-check with ledger anchors to catch even subtle tampering.</p>
+      </div>
+
+      <div class="feature">
+        <div class="icon">⛓️</div>
+        <h3>Blockchain Audit Trail</h3>
+        <p>Every action is immutably recorded for non-repudiation and court-grade transparency.</p>
+      </div>
+
+      <div class="feature">
+        <div class="icon">📧</div>
+        <h3>SBVM Secure Code</h3>
+        <p>Two-step sign-in with short-lived codes (EmailJS) for stronger identity assurance.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROLES -->
+  <section class="roles">
+    <h2 class="section-title">Who Uses Our Platform?</h2>
+    <div class="roles-grid">
+      <div class="role">
+        <h3>👑 Administrator</h3>
+        <p>Manage users & roles, enforce policies, and review full audit logs across the system.</p>
+      </div>
+
+      <div class="role">
+        <h3>🧠 Investigator</h3>
+        <p>Acquire, register, and manage evidence with integrity stamps and secure storage.</p>
+      </div>
+
+      <div class="role">
+        <h3>🔎 Verifier</h3>
+        <p>Validate evidence authenticity via hash checks, signatures, and ledger proofs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Start Securing Your Digital Evidence Today</h2>
+    <p>Join our authentication-driven ecosystem built for transparency, integrity, and trust.</p>
+    <a href="{{ url_for('auth_bp.login') }}" class="btn-primary btn-large">Get Started</a>
+  </section>
+</div>
+
+{% endblock %}

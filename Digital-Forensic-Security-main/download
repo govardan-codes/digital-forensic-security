@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .ledger-wrap{
+    width:100%;
+    background:
+      radial-gradient(1100px 520px at -15% -20%, color-mix(in oklab, var(--brand) 22%, transparent), transparent 60%),
+      radial-gradient(1100px 520px at 110% 120%, color-mix(in oklab, var(--blue) 18%, transparent), transparent 60%);
+    border-radius:18px;
+    padding:2rem 1.25rem 3rem;
+  }
+
+  /* Hero */
+  .ledger-hero{
+    background:linear-gradient(135deg,var(--brand),var(--blue));
+    color:var(--navy);
+    border-radius:18px;
+    padding:2rem 1.5rem;
+    text-align:center;
+    box-shadow:0 14px 36px rgba(0,0,0,.25);
+    margin-bottom:2.5rem;
+  }
+  .ledger-hero h2{font-weight:900;font-size:2rem;margin-bottom:.4rem;}
+  .ledger-hero p{max-width:900px;margin:0 auto;color:#022232;font-size:1.05rem;}
+
+  /* Summary Cards */
+  .summary-row{
+    display:flex;flex-wrap:wrap;gap:1.25rem;margin:2rem 0;
+    justify-content:center;
+  }
+  .summary-card{
+    flex:1;min-width:220px;max-width:280px;
+    background:var(--card);
+    padding:1.25rem;
+    border-radius:1rem;
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+    text-align:center;
+  }
+  .summary-card h3{margin:0;font-size:1.5rem;}
+  .summary-card p{margin:0.25rem 0 0;color:var(--muted);font-size:.95rem;}
+
+  /* Search/Filter */
+  .filter-bar{
+    display:flex;flex-wrap:wrap;gap:1rem;
+    background:color-mix(in oklab,var(--card) 92%,black 8%);
+    border:1px solid var(--ring);
+    border-radius:1rem;
+    padding:1rem;
+    box-shadow:0 6px 16px rgba(0,0,0,.25);
+    margin-bottom:2rem;
+    justify-content:center;
+  }
+  .filter-bar input{
+    flex:1;min-width:260px;
+    background:#1a2d3f;
+    color:var(--text);
+    border:none;
+    padding:0.8rem 1rem;
+    border-radius:0.6rem;
+  }
+  .filter-bar button,.filter-bar a{
+    padding:0.8rem 1.3rem;
+    border-radius:0.6rem;
+    font-weight:700;
+  }
+
+  /* Table */
+  .ledger-table-wrap{
+    overflow-x:auto;
+    background:var(--card);
+    border-radius:1rem;
+    box-shadow:0 10px 28px rgba(0,0,0,.35);
+    padding:1.5rem;
+  }
+  table{width:100%;border-collapse:collapse;font-size:.95rem;}
+  thead th{
+    padding:0.75rem;
+    text-align:left;
+    background:rgba(255,255,255,0.06);
+    color:var(--text);
+    font-weight:700;
+    border-bottom:2px solid var(--ring);
+  }
+  tbody tr:nth-child(even){background:rgba(255,255,255,0.02);}
+  tbody tr:hover{background:rgba(255,255,255,0.05);}
+  tbody td{padding:0.75rem;border-bottom:1px solid rgba(255,255,255,0.05);vertical-align:top;}
+  code{font-size:0.85rem;background:rgba(0,0,0,0.25);padding:0.15rem 0.3rem;border-radius:0.25rem;}
+
+  /* Status badges */
+  .badge{
+    display:inline-block;
+    padding:0.3rem 0.75rem;
+    border-radius:999px;
+    font-weight:700;
+    font-size:0.85rem;
+  }
+  .badge.valid{background:rgba(0,230,118,0.1);color:#00e676;}
+  .badge.invalid{background:rgba(255,82,82,0.1);color:#ff5252;}
+
+  /* Legend */
+  .legend{
+    background:color-mix(in oklab,var(--card) 92%,black 8%);
+    padding:1.5rem;
+    border-radius:1rem;
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+    max-width:900px;
+    margin:2.5rem auto 0;
+  }
+  .legend h4{margin-bottom:1rem;}
+  .legend ul{color:var(--muted);line-height:1.6;font-size:.95rem;margin:0;padding-left:1.3rem;}
+
+  .btn-back{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    background:var(--brand);
+    color:#001220;
+    font-weight:800;
+    border-radius:12px;
+    padding:.9rem 1.3rem;
+    text-decoration:none;
+    margin-top:2rem;
+  }
+
+  @keyframes fadeInUp {
+    0%{opacity:0;transform:translateY(15px);}
+    100%{opacity:1;transform:translateY(0);}
+  }
+  tbody tr{animation:fadeInUp .4s ease forwards;}
+</style>
+
+<div class="ledger-wrap">
+  <!-- Hero -->
+  <div class="ledger-hero">
+    <h2>🔗 My Blockchain Ledger</h2>
+    <p>This immutable ledger records every blockchain transaction — including evidence uploads, verifications, and logins — ensuring <strong>tamper-proof integrity</strong>.</p>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-row">
+    <div class="summary-card">
+      <h3>🔢 {{ ledger|length }}</h3>
+      <p>Total Blockchain Blocks</p>
+    </div>
+    {% set uploads = ledger | selectattr('action_type','equalto','upload_evidence') | list %}
+    {% set verifications = ledger | selectattr('action_type','equalto','verification') | list %}
+    <div class="summary-card">
+      <h3>📁 {{ uploads|length }}</h3>
+      <p>Evidence Uploads</p>
+    </div>
+    <div class="summary-card">
+      <h3>🧾 {{ verifications|length }}</h3>
+      <p>Verifications Logged</p>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <form method="GET" class="filter-bar">
+    <input type="text" name="search" placeholder="🔍 Search by file name, action, or hash..."
+           value="{{ request.args.get('search','') }}">
+    <button class="btn btn-outline-light" type="submit">Filter</button>
+    <a href="{{ url_for('investigator_bp.view_ledger') }}" class="btn btn-secondary">Reset</a>
+  </form>
+
+  <!-- Table -->
+  {% if ledger and ledger|length > 0 %}
+  <div class="ledger-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Block ID</th>
+          <th>Action Type</th>
+          <th>Timestamp</th>
+          <th>Hash (Partial)</th>
+          <th>Status</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for block in ledger %}
+        <tr>
+          <td><code>#{{ block.block_id }}</code></td>
+          <td>
+            {% if block.action_type == 'upload_evidence' %}
+              <span style="color:var(--brand);font-weight:600;">📤 Upload</span>
+            {% elif block.action_type == 'verification' %}
+              <span style="color:#00e676;font-weight:600;">🧾 Verification</span>
+            {% elif block.action_type == 'login_success' %}
+              <span style="color:var(--yellow);font-weight:600;">🔑 Login</span>
+            {% else %}
+              <span style="color:var(--muted);">{{ block.action_type }}</span>
+            {% endif %}
+          </td>
+          <td>{{ block.timestamp.strftime("%d %b %Y, %H:%M") }}</td>
+          <td><code>{{ block.current_hash[:16] }}…</code></td>
+          <td>
+            {% if block.chain_status == 'valid' %}
+              <span class="badge valid">✅ Valid</span>
+            {% else %}
+              <span class="badge invalid">⚠️ Invalid</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if block.details %}
+              {% set details = block.details | safe %}
+              {% if '"result": "tampered"' in details %}
+                <span style="color:#ff5252;font-weight:600;">TAMPER ALERT</span>
+              {% elif '"result": "genuine"' in details %}
+                <span style="color:#00e676;font-weight:600;">Genuine</span>
+              {% elif '"file_name"' in details %}
+                <span style="color:var(--brand);font-weight:600;">File Record</span>
+              {% else %}
+                <span style="color:var(--muted);">Event</span>
+              {% endif %}
+              <div style="margin-top:0.3rem;"><code style="font-size:0.8rem;opacity:0.85;">{{ details[:120] }}...</code></div>
+            {% else %}
+              <span style="color:var(--muted);font-size:0.85rem;">No details recorded</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-top:1rem;color:var(--muted);font-size:0.9rem;">
+    ⛓️ Each block is cryptographically linked. If any hash is altered, the chain integrity breaks and its status turns <strong>Invalid</strong>.
+  </p>
+  {% else %}
+    <p style="color:var(--muted);text-align:center;">No blockchain records found yet. Upload or verify evidence to create your first block.</p>
+  {% endif %}
+
+  <!-- Legend -->
+  <div class="legend">
+    <h4>📘 Legend & Interpretation</h4>
+    <ul>
+      <li><strong>Block ID:</strong> Sequential identifier for the blockchain block.</li>
+      <li><strong>Action Type:</strong> The event that generated the block (Upload, Verification, or Login).</li>
+      <li><strong>Hash:</strong> Cryptographic fingerprint — even a minor change alters this value.</li>
+      <li><strong>Status:</strong> “Valid” means the chain is intact; “Invalid” means tampering detected.</li>
+      <li><strong>Details:</strong> JSON summary of the event (file name, verifier, result, timestamp, etc.).</li>
+    </ul>
+  </div>
+
+  <div style="text-align:center;">
+    <a href="{{ url_for('investigator_bp.dashboard') }}" class="btn-back">🏠 Back to Dashboard</a>
+  </div>
+</div>
+
+{% endblock %}

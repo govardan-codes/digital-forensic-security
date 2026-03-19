@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  /* ===== Add User Page ===== */
+  .add-user-wrapper {
+    width: 100%;
+    background:
+      radial-gradient(1100px 520px at -15% -20%, color-mix(in oklab, var(--brand) 22%, transparent), transparent 60%),
+      radial-gradient(1100px 520px at 110% 120%, color-mix(in oklab, var(--blue) 18%, transparent), transparent 60%);
+    border-radius: 18px;
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  /* Hero Section */
+  .add-user-hero {
+    background: linear-gradient(135deg, var(--brand), var(--blue));
+    color: var(--navy);
+    text-align: center;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.3);
+    padding: 2rem 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .add-user-hero h2 {
+    font-weight: 900;
+    font-size: 2rem;
+    margin-bottom: .5rem;
+  }
+  .add-user-hero p {
+    color: #022232;
+    font-size: 1.05rem;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+
+  /* Form Card */
+  .add-user-card {
+    background: var(--card);
+    border: 1px solid var(--ring);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.3);
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 2rem 1.75rem;
+    color: var(--text);
+  }
+
+  .add-user-card label {
+    display: block;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .add-user-card input,
+  .add-user-card select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: color-mix(in oklab, var(--bg) 90%, black 10%);
+    border: 1px solid color-mix(in oklab, var(--ring) 70%, transparent);
+    border-radius: 10px;
+    font-size: 1rem;
+    color: var(--text);
+    transition: all 0.25s ease;
+  }
+
+  .add-user-card input:focus,
+  .add-user-card select:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand) 30%, transparent);
+  }
+
+  .btn-submit {
+    width: 100%;
+    margin-top: 1.75rem;
+    background: var(--yellow);
+    color: var(--navy);
+    font-weight: 800;
+    border: none;
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.25s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,.2);
+  }
+  .btn-submit:hover {
+    background: var(--bright-yellow);
+    transform: translateY(-2px);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    margin-top: 1.5rem;
+    font-weight: 600;
+    color: var(--brand);
+    text-decoration: none;
+  }
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  @media(max-width:600px){
+    .add-user-card{padding:1.5rem 1.25rem;}
+    .add-user-hero h2{font-size:1.6rem;}
+  }
+</style>
+
+<div class="add-user-wrapper">
+  <!-- Header -->
+  <section class="add-user-hero">
+    <h2>➕ Add New User</h2>
+    <p>Create and manage Investigator or Verifier accounts with secure blockchain access.</p>
+  </section>
+
+  <!-- Form -->
+  <div class="add-user-card">
+    <form method="POST">
+      <label for="full_name">Full Name</label>
+      <input type="text" id="full_name" name="full_name" placeholder="Enter full name" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Enter email address" required>
+
+      <label for="role">Role</label>
+      <select id="role" name="role" required>
+        <option value="">-- Select Role --</option>
+        <option value="investigator">Investigator</option>
+        <option value="verifier">Verifier</option>
+      </select>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter temporary password" required>
+
+      <button type="submit" class="btn-submit">✅ Add User</button>
+    </form>
+
+    <a href="{{ url_for('admin_bp.manage_users') }}" class="back-link">← Back to User List</a>
+  </div>
+</div>
+
+{% endblock %}

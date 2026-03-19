@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .verify-result-wrap{
+    width:100%;
+    background:
+      radial-gradient(1000px 520px at -10% -10%, color-mix(in oklab, var(--brand) 22%, transparent), transparent 60%),
+      radial-gradient(1000px 520px at 110% 110%, color-mix(in oklab, var(--blue) 18%, transparent), transparent 60%);
+    border-radius:18px;
+    padding:2rem 1.25rem 3rem;
+  }
+
+  /* Hero Section */
+  .hero{
+    border-radius:18px;
+    text-align:center;
+    padding:2.5rem 1.5rem;
+    box-shadow:0 14px 36px rgba(0,0,0,.25);
+    margin-bottom:2.5rem;
+    color:var(--text);
+  }
+  .hero.genuine{
+    background:linear-gradient(135deg, #00e676, var(--brand));
+    color:#042716;
+  }
+  .hero.tampered{
+    background:linear-gradient(135deg, #ff5252, #b00020);
+    color:#fff;
+  }
+  .hero h2{font-size:2rem;font-weight:900;margin:0.5rem 0;}
+  .hero p{font-size:1.05rem;max-width:800px;margin:0 auto;color:rgba(255,255,255,.85);}
+  .hero .icon{
+    font-size:4rem;
+    line-height:1;
+    margin-bottom:.75rem;
+    filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));
+  }
+
+  /* Result Card */
+  .result-card{
+    background:var(--card);
+    border:1px solid var(--ring);
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+    max-width:950px;
+    margin:0 auto;
+    padding:2rem 2rem 2.5rem;
+    color:var(--text);
+  }
+  .result-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:1.5rem;
+  }
+  @media(min-width:850px){
+    .result-grid{
+      grid-template-columns:1fr 1fr;
+      gap:2rem;
+    }
+  }
+
+  .hash-box{
+    background: color-mix(in oklab, var(--bg) 85%, black 15%);
+    border:1px solid color-mix(in oklab, var(--ring) 70%, transparent);
+    border-radius:14px;
+    padding:1rem 1.25rem;
+  }
+  .hash-box h4{
+    color:var(--brand);
+    font-weight:800;
+    font-size:1.1rem;
+    margin-bottom:.5rem;
+  }
+  .mono{
+    display:block;
+    background: color-mix(in oklab, var(--bg) 90%, black 10%);
+    border:1px solid color-mix(in oklab, var(--ring) 70%, transparent);
+    border-radius:10px;
+    padding:1rem 1rem;
+    word-wrap:break-word;
+    font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color:var(--text);
+    font-size:.95rem;
+  }
+
+  .meta-info{
+    margin-top:1rem;
+    color:var(--muted);
+    font-size:.95rem;
+  }
+
+  /* Buttons */
+  .btn-row{
+    margin-top:2.2rem;
+    display:flex;
+    flex-wrap:wrap;
+    gap:1rem;
+    justify-content:center;
+  }
+  .btn-link{
+    text-decoration:none;
+    font-weight:800;
+    border-radius:12px;
+    padding:.9rem 1.3rem;
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    transition:transform .25s ease;
+  }
+  .btn-link:hover{transform:translateY(-2px);}
+  .btn-outline{background:transparent;border:1px solid var(--ring);color:var(--text);}
+  .btn-success{background:var(--yellow);color:var(--navy);}
+  .btn-primary{background:var(--brand);color:#001220;}
+
+  @media(max-width:600px){
+    .result-card{padding:1.5rem;}
+    .hero h2{font-size:1.6rem;}
+  }
+</style>
+
+<div class="verify-result-wrap">
+
+  <!-- Hero -->
+  {% if result == 'genuine' %}
+    <div class="hero genuine">
+      <div class="icon">✅</div>
+      <h2>Evidence Verified as Authentic</h2>
+      <p>This file’s integrity is intact and matches the blockchain record.</p>
+    </div>
+  {% elif result == 'tampered' %}
+    <div class="hero tampered">
+      <div class="icon">⚠️</div>
+      <h2>Evidence Tampering Detected</h2>
+      <p>The file hash does not match the original blockchain record — this evidence has likely been altered.</p>
+    </div>
+  {% else %}
+    <div class="hero" style="background:linear-gradient(135deg,var(--brand),var(--blue));color:var(--navy);">
+      <div class="icon">ℹ️</div>
+      <h2>No Verification Result</h2>
+      <p>Please upload a valid file for verification.</p>
+    </div>
+  {% endif %}
+
+  <!-- Result Card -->
+  <div class="result-card">
+    <div class="result-grid">
+      <div class="hash-box">
+        <h4>📄 File Name</h4>
+        <div class="mono">{{ filename }}</div>
+        <div class="meta-info">Stored in blockchain block <strong>#{{ block_id }}</strong></div>
+      </div>
+
+      <div class="hash-box">
+        <h4>⛓️ Blockchain Block ID</h4>
+        <div class="mono">#{{ block_id }}</div>
+      </div>
+
+      <div class="hash-box">
+        <h4>🔐 Original SHA-256 Hash</h4>
+        <pre class="mono">{{ original_hash }}</pre>
+      </div>
+
+      <div class="hash-box">
+        <h4>📂 Current File Hash</h4>
+        <pre class="mono">{{ current_hash }}</pre>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <a href="{{ url_for('investigator_bp.verify_evidence') }}" class="btn-link btn-outline">🔁 Verify Another File</a>
+      <a href="{{ url_for('investigator_bp.view_ledger') }}" class="btn-link btn-success">🔗 View Blockchain Ledger</a>
+      <a href="{{ url_for('investigator_bp.dashboard') }}" class="btn-link btn-primary">🏠 Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Subtle animation when the hero loads
+  document.addEventListener('DOMContentLoaded',()=>{
+    const hero=document.querySelector('.hero');
+    if(hero){
+      hero.style.opacity=0;
+      hero.style.transform='translateY(15px)';
+      setTimeout(()=>{
+        hero.style.transition='all .8s ease';
+        hero.style.opacity=1;
+        hero.style.transform='translateY(0)';
+      },150);
+    }
+  });
+</script>
+
+{% endblock %}
