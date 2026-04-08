@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title or "Digital Forensic Security System" }}</title>
+
+  <!-- Inter font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Your global file (kept) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <style>
+    :root{
+      --yellow:#FFC107;
+      --bright-yellow:#FFDD00;
+      --blue:#00008B;
+      --navy:#000066;
+      --bg:#f4f6fb;
+      --text:#1d2433;
+      --muted:#586174;
+      --card:#ffffff;
+      --ring: rgba(0,0,0,.08);
+    }
+
+    /* ---------- Base ---------- */
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:'Inter',system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:var(--bg);
+      line-height:1.5;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+
+    /* ---------- Top Bar (full width) ---------- */
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      width:100%;
+      background:linear-gradient(90deg,var(--blue),var(--navy));
+      box-shadow:0 2px 10px rgba(0,0,0,.15);
+    }
+    .nav-wrap{
+      max-width:1400px;
+      margin:0 auto;
+      padding:14px 28px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px;
+      color:#fff;text-decoration:none;
+      font-weight:800;letter-spacing:.4px;font-size:1.25rem;
+      white-space:nowrap;
+    }
+    .brand .logo{
+      width:34px;height:34px;border-radius:9px;
+      display:inline-grid;place-items:center;
+      background:var(--yellow);color:var(--navy);
+      font-weight:900;
+      box-shadow:0 6px 14px rgba(0,0,0,.25);
+    }
+
+    /* ---------- Nav ---------- */
+    .nav{
+      display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+    }
+    .nav a{
+      display:inline-block;
+      color:#e9ecff;text-decoration:none;
+      padding:10px 14px;border-radius:10px;
+      font-weight:600;font-size:0.98rem;letter-spacing:.2px;
+      transition:all .18s ease;
+    }
+    .nav a:hover{background:rgba(255,255,255,.08);}
+    .nav a.active{background:rgba(255,255,255,.14); color:#fff;}
+
+    .btn-primary{
+      background:var(--yellow);color:var(--navy);
+      padding:10px 16px;border-radius:10px;
+      font-weight:800;box-shadow:0 6px 14px rgba(0,0,0,.18);
+      margin-left:6px;
+      transition:transform .15s ease, background .15s ease;
+    }
+    .btn-primary:hover{background:var(--bright-yellow);transform:translateY(-1px);}
+
+    /* ---------- Page Canvas (full width) ---------- */
+    .page{
+      width:100%;
+      min-height:calc(100vh - 64px);
+      display:flex;flex-direction:column;
+    }
+
+    /* Edge-to-edge hero rail to give pages breathing room */
+    .page-rail{
+      width:100%;
+      background:
+        radial-gradient(1200px 600px at -10% -10%, rgba(255,221,0,.08), transparent 60%),
+        radial-gradient(1200px 600px at 110% 110%, rgba(0,0,139,.08), transparent 60%);
+    }
+
+    /* Main content uses the FULL width with roomy paddings */
+    main{
+      width:100%;
+      max-width:1600px;   /* still keeps content readable on ultra-wide */
+      margin:0 auto;
+      padding:28px 32px 40px 32px;
+    }
+
+    /* Optional card utility (for inner sections) */
+    .card{
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:16px;
+      padding:22px 22px;
+      box-shadow:0 10px 30px rgba(0,0,0,.06);
+    }
+
+    /* Headings bigger and clearer */
+    h1{font-size:2rem;margin:.2rem 0 .75rem 0;letter-spacing:.2px;}
+    h2{font-size:1.5rem;margin:.2rem 0 .5rem 0;}
+    p,li{font-size:1.05rem;color:var(--muted);}
+
+    /* ---------- Flash (fixed, neat stack) ---------- */
+    .flashes{
+      position:fixed; top:78px; right:22px; z-index:1100;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .flash{
+      background:#fff; color:#0b1533;
+      border-left:6px solid var(--yellow);
+      box-shadow:0 10px 24px rgba(0,0,0,.16);
+      border-radius:10px; padding:12px 16px; min-width:280px;
+      font-weight:600;
+      animation:fadeIn .25s ease-out;
+    }
+    .flash.success{ border-left-color:#2ecc71;}
+    .flash.danger{  border-left-color:#e74c3c;}
+    .flash.info{    border-left-color:#0077ff;}
+    .flash.warning{ border-left-color:#ff9800;}
+
+    @keyframes fadeIn{
+      from{opacity:0; transform:translateY(-6px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    /* ---------- Footer ---------- */
+    footer{
+      margin-top:auto;
+      width:100%;
+      background:#fff;border-top:1px solid var(--ring);
+      box-shadow:0 -4px 12px rgba(0,0,0,.04);
+    }
+    .footer-wrap{
+      max-width:1400px;margin:0 auto;
+      padding:18px 28px;
+      color:#4a5468;font-size:0.98rem;
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px; flex-wrap:wrap;
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 900px){
+      .nav-wrap{padding:12px 18px;}
+      main{padding:22px 18px 28px 18px;}
+      .brand{font-size:1.1rem}
+      .btn-primary{padding:9px 14px}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="topbar">
+    <div class="nav-wrap">
+      <a class="brand" href="{{ url_for('main_bp.home') }}">
+        <span class="logo">🔐</span>
+        Digital Forensic Security System
+      </a>
+
+      <nav class="nav">
+        <a href="{{ url_for('main_bp.home') }}"
+           class="{% if request.endpoint=='main_bp.home' %}active{% endif %}">Home</a>
+
+        <a href="{{ url_for('main_bp.about') }}"
+           class="{% if request.endpoint=='main_bp.about' %}active{% endif %}">About</a>
+
+        {% if current_user.is_authenticated %}
+          {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('admin_bp.dashboard') }}"
+               class="{% if request.endpoint and request.endpoint.startswith('admin_bp.') %}active{% endif %}">Admin</a>
+          {% elif current_user.role == 'investigator' %}
+            <a href="{{ url_for('investigator_bp.dashboard') }}"
+               class="{% if request.endpoint and request.endpoint.startswith('investigator_bp.') %}active{% endif %}">Investigator</a>
+          {% elif current_user.role == 'verifier' %}
+            <a href="{{ url_for('verifier_bp.dashboard') }}"
+               class="{% if request.endpoint and request.endpoint.startswith('verifier_bp.') %}active{% endif %}">Verifier</a>
+          {% endif %}
+          <a href="{{ url_for('auth_bp.logout') }}" class="btn-primary">Logout</a>
+        {% else %}
+          <a href="{{ url_for('auth_bp.login') }}" class="btn-primary">Login</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flashes">
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Page canvas -->
+  <div class="page">
+    <div class="page-rail">
+      <main>
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    <footer>
+      <div class="footer-wrap">
+        <span>© 2025 Digital Forensic Security Platform — Secure Evidence Management</span>
+        <span>Built with SBVM • AOKGE • MHE • Immutable Ledger</span>
+      </div>
+    </footer>
+  </div>
+
+    <!-- ---------- EmailJS SDK (Global) ---------- -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="{{ url_for('static', filename='js/email.js') }}"></script>
+
+  <!-- ---------- Flash Auto Dismiss (4 seconds) ---------- -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const flashes = document.querySelectorAll(".flash");
+      if (flashes.length) {
+        setTimeout(() => {
+          flashes.forEach(flash => {
+            flash.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+            flash.style.opacity = "0";
+            flash.style.transform = "translateY(-10px)";
+            setTimeout(() => flash.remove(), 600); // remove after fade-out
+          });
+        }, 4000); // 4 seconds before fade-out starts
+      }
+    });
+  </script>
+</body>
+</html>
+

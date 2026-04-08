@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .hero-wrap{
+    width:100%;
+    margin: -8px 0 22px 0;
+  }
+  .hero{
+    position:relative;
+    background:
+      linear-gradient(90deg, var(--blue), var(--navy));
+    border-radius:18px;
+    padding:34px 20px 28px 20px;
+    color:#fff;
+    box-shadow:0 14px 36px rgba(0,0,0,.20);
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(900px 360px at -5% -10%, rgba(255,193,7,.20), transparent 60%),
+      radial-gradient(900px 360px at 105% 110%, rgba(255,255,255,.10), transparent 60%);
+    pointer-events:none;
+  }
+  .hero-title{
+    text-align:center;
+    font-weight:800;
+    font-size:1.85rem;
+    line-height:1.25;
+    letter-spacing:.2px;
+    margin:0 8px 12px 8px;
+  }
+  .hero-sub{
+    text-align:center;
+    font-size:1.05rem;
+    color:#e7ebff;
+    margin:0 auto 8px auto;
+    max-width:1100px;
+  }
+  .badges{
+    display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:14px;
+  }
+  .badge{
+    background:rgba(255,255,255,.14);
+    color:#fff; border:1px solid rgba(255,255,255,.22);
+    padding:8px 12px; border-radius:999px; font-weight:700; font-size:.92rem;
+  }
+  .badge.yellow{ background:var(--yellow); color:var(--navy); border-color:transparent; }
+
+  .section{
+    margin-top:22px;
+    display:grid; gap:18px;
+    grid-template-columns: 1.3fr 1fr;
+  }
+  .section .card h2{
+    margin-bottom:.35rem; color:#0c1740;
+  }
+  .kpis{
+    display:grid; gap:12px; grid-template-columns: repeat(3, 1fr);
+  }
+  .kpi{
+    background:#fff; border:1px solid var(--ring); border-radius:14px;
+    padding:16px 16px;
+  }
+  .kpi .k{font-size:.9rem; color:var(--muted); margin-bottom:6px;}
+  .kpi .v{font-size:1.25rem; font-weight:800; color:#0c1740;}
+
+  .grid-people{
+    display:grid; gap:14px;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .person{
+    background:#fff; border:1px solid var(--ring);
+    border-radius:16px; padding:16px 16px 14px 16px;
+    box-shadow:0 8px 22px rgba(0,0,0,.06);
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .avatar{
+    width:40px;height:40px;border-radius:10px;
+    display:grid;place-items:center;
+    background:var(--yellow); color:var(--navy); font-weight:900;
+    box-shadow:0 6px 14px rgba(0,0,0,.18);
+  }
+  .name{font-weight:800; font-size:1.05rem; color:#0c1740; margin-top:2px;}
+  .roll{font-size:.95rem; color:var(--muted);}
+  .role-chip{
+    align-self:flex-start;
+    padding:6px 10px; border-radius:999px;
+    background:rgba(0,0,139,.08); color:var(--navy);
+    font-weight:700; font-size:.84rem; border:1px solid rgba(0,0,139,.15)
+  }
+  .list{
+    margin:6px 0 0 0; padding-left:18px; color:var(--muted);
+  }
+  .list li{ margin:.25rem 0; }
+
+  .mentor{
+    display:grid; gap:16px; grid-template-columns: 64px 1fr;
+    align-items:center;
+  }
+  .mentor .seal{
+    width:64px;height:64px;border-radius:16px;
+    background:var(--yellow); color:var(--navy);
+    display:grid;place-items:center; font-size:1.6rem; font-weight:900;
+    box-shadow:0 10px 24px rgba(0,0,0,.18);
+  }
+  .mentor .who{font-weight:800; color:#0c1740;}
+  .mentor .dept{color:var(--muted);}
+
+  .divider{
+    height:1px; background:var(--ring); margin:10px 0;
+  }
+
+  @media (max-width: 1200px){
+    .section{ grid-template-columns: 1fr; }
+    .grid-people{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px){
+    .grid-people{ grid-template-columns: 1fr; }
+    .kpis{ grid-template-columns: repeat(2, 1fr); }
+    .hero-title{ font-size:1.6rem;}
+  }
+</style>
+
+<div class="hero-wrap">
+  <div class="hero card">
+    <h1 class="hero-title">Next-Generation Digital Forensic Security:<br>
+      Authentication-Driven Secure Storage & Optimised Encryption</h1>
+
+    <p class="hero-sub">
+      A robust, audit-ready platform for tamper-proof evidence handling. We combine strong
+      identity verification, integrity hashing, and optimized encryption to safeguard digital artifacts
+      from acquisition to court-grade verification.
+    </p>
+
+    <div class="badges">
+      <span class="badge yellow">🔐 Authentication-First</span>
+      <span class="badge">🧾 Immutable Ledger</span>
+      <span class="badge">🧮 Optimised Crypto</span>
+      <span class="badge">🧪 Evidence Integrity</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="card">
+    <h2>About the Project</h2>
+    <p>
+      The system enforces <strong>secure onboarding and role-based access</strong> for Admin, Investigator, and Verifier.
+      Each piece of evidence is <strong>signed, hashed, and time-stamped</strong> during upload, then anchored to an
+      immutable ledger for <em>non-repudiation</em>. Our <strong>Optimised Encryption</strong> balances speed with
+      security, ensuring large files remain responsive to handle while maintaining confidentiality.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="k">Core Pillars</div>
+        <div class="v">Auth • Integrity • Crypto • Audit</div>
+      </div>
+      <div class="kpi">
+        <div class="k">User Roles</div>
+        <div class="v">Admin • Investigator • Verifier</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Assurance</div>
+        <div class="v">Chain-of-Custody Proofs</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Submission & Guidance</h2>
+
+    <div style="margin-top:8px;">
+      <div class="role-chip">Submitted by</div>
+      <ul class="list">
+        <li><strong>B Sai Thanusree</strong> — <em>Roll No: 224G1A0692</em></li>
+        <li><strong>S A Roshini</strong> — <em>Roll No: 224G1A0587</em></li>
+        <li><strong>A Govardhan</strong> — <em>Roll No: 224G1A05C7</em></li>
+      </ul>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="mentor">
+      <div class="seal">🎓</div>
+      <div>
+        <div class="who">Under the Esteemed Guidance of <br> Mrs. M. Soumya, M.Tech, PhD</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:18px;">
+  <h2 style="text-align:center; margin-bottom:.25rem;">Team Contributions</h2>
+
+  <div class="grid-people" style="margin-top:10px;">
+
+    <div class="person">
+      <div class="avatar">ST</div>
+      <div class="name">B Sai Thanusree</div>
+      <div class="roll">Roll No: 224G1A0692</div>
+      <span class="role-chip">Authentication & RBAC</span>
+      <ul class="list">
+        <li>Login/OTP & secure session handling</li>
+        <li>Role policies</li>
+        <li>User lifecycle & activity audits</li>
+      </ul>
+    </div>
+
+    <div class="person">
+      <div class="avatar">SR</div>
+      <div class="name">S A Roshini</div>
+      <div class="roll">Roll No: 224G1A0587</div>
+      <span class="role-chip">Evidence Pipeline</span>
+      <ul class="list">
+        <li>Upload & metadata capture</li>
+        <li>SHA-256 hashing</li>
+        <li>Chain-of-custody ledger</li>
+      </ul>
+    </div>
+
+    <div class="person">
+      <div class="avatar">AG</div>
+      <div class="name">A Govardhan</div>
+      <div class="roll">Roll No: 224G1A05C7</div>
+      <span class="role-chip">Optimised Encryption</span>
+      <ul class="list">
+        <li>Secure file encryption</li>
+        <li>Key management</li>
+        <li>Performance tuning</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<div class="card" style="margin-top:18px; background:linear-gradient(90deg,var(--blue),var(--navy)); color:#fff;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+    <div style="font-weight:800; font-size:1.1rem;">Why this matters</div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <span class="badge yellow">Court-Ready Logs</span>
+      <span class="badge" style="border-color:rgba(255,255,255,.32)">Integrity-First Design</span>
+      <span class="badge" style="border-color:rgba(255,255,255,.32)">Privacy by Default</span>
+    </div>
+  </div>
+
+  <p class="hero-sub" style="max-width:none; margin:10px 0 0 0;">
+    Our platform raises the bar for digital evidence handling — from secure acquisition to transparent verification —
+    ensuring investigators and courts can trust every byte.
+  </p>
+</div>
+
+{% endblock %}

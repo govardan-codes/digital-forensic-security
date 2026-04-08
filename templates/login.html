@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  /* ======== LOGIN PAGE ======== */
+  body {
+    background: var(--bg);
+  }
+
+  .login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 80px);
+    margin: 0;
+  }
+
+  .login-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 980px;
+    height: 560px;
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+  }
+
+  /* ===== Left Illustration Section ===== */
+  .login-left {
+    background: linear-gradient(180deg, var(--blue), var(--navy));
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+
+  .login-left img {
+    width: 340px;
+    height: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .login-left h3 {
+    font-weight: 800;
+    font-size: 1.45rem;
+    margin-bottom: 0.3rem;
+    color: var(--yellow);
+  }
+
+  .login-left p {
+    font-size: 1rem;
+    color: #e6ecff;
+    max-width: 310px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* ===== Right Form Section ===== */
+  .login-right {
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 3.5rem;
+  }
+
+  .login-right h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: var(--yellow);
+  }
+
+  .login-right h2 span {
+    color: var(--text);
+  }
+
+  .login-right p.subtitle {
+    color: var(--muted);
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  label {
+    font-weight: 600;
+    color: var(--navy);
+    font-size: 1rem;
+  }
+
+  input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    border: 1.8px solid #ddd;
+    font-size: 1.05rem;
+    background: #fffbe6;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+
+  input:focus {
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25);
+    outline: none;
+  }
+
+  button {
+    background: var(--yellow);
+    color: var(--navy);
+    font-weight: 800;
+    font-size: 1.05rem;
+    border: none;
+    border-radius: 999px;
+    padding: 0.9rem 1.8rem;
+    width: 150px;
+    align-self: flex-start;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s, background 0.2s;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: var(--bright-yellow);
+    transform: translateY(-2px);
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 950px) {
+    .login-card {
+      grid-template-columns: 1fr;
+      width: 90%;
+      height: auto;
+    }
+
+    .login-left {
+      display: none;
+    }
+
+    .login-right {
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    .login-right h2 {
+      font-size: 1.6rem;
+    }
+
+    form button {
+      margin: 0 auto;
+    }
+  }
+</style>
+
+<div class="login-page">
+  <div class="login-card">
+    <!-- Left Illustration -->
+    <div class="login-left">
+      <img src="{{ url_for('static', filename='img/rocket.png') }}" alt="Secure Launch">
+      <h3>Excited to have you here!</h3>
+      <p>Begin your secure journey into our blockchain-based digital forensic system.</p>
+    </div>
+
+    <!-- Right Form -->
+    <div class="login-right">
+      <h2>Start <span>today</span>, secure your <span>digital evidence</span>.</h2>
+      <p class="subtitle">Enter your credentials to receive a 10-character verification code.</p>
+
+      <form method="POST" action="{{ url_for('auth_bp.login') }}">
+        <label for="email">Email ID</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

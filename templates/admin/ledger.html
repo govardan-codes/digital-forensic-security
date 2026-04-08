@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .ledger-wrap {
+    width: 100%;
+    background:
+      radial-gradient(1100px 520px at -15% -20%, color-mix(in oklab, var(--yellow) 20%, transparent), transparent 60%),
+      radial-gradient(1100px 520px at 110% 120%, color-mix(in oklab, var(--blue) 20%, transparent), transparent 60%);
+    border-radius: 18px;
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  /* Header */
+  .ledger-hero {
+    background: linear-gradient(135deg, var(--blue), var(--navy));
+    color: #fff;
+    border-radius: 18px;
+    padding: 2.2rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 14px 36px rgba(0,0,0,.25);
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+  .ledger-hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(900px 360px at -5% -10%, rgba(255,193,7,.25), transparent 60%),
+      radial-gradient(900px 360px at 105% 110%, rgba(255,255,255,.10), transparent 60%);
+    pointer-events: none;
+  }
+  .ledger-hero h2 { font-weight: 900; font-size: 2rem; margin-bottom: .5rem; }
+  .ledger-hero p { max-width: 900px; margin: 0 auto; color: #e7ebff; font-size: 1.05rem; }
+
+  /* Ledger Table */
+  .ledger-table-wrap {
+    overflow-x: auto;
+    background: var(--card);
+    border-radius: 1rem;
+    box-shadow: 0 10px 28px rgba(0,0,0,.25);
+    padding: 1.5rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .95rem;
+  }
+  thead th {
+    padding: 0.8rem;
+    text-align: left;
+    background: linear-gradient(90deg, var(--blue), var(--navy));
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: .2px;
+  }
+  tbody tr:nth-child(even) { background: rgba(0,0,0,.02); }
+  tbody tr:hover { background: rgba(0,0,0,.05); transition: 0.2s ease; }
+  tbody td {
+    padding: 0.8rem;
+    border-bottom: 1px solid rgba(0,0,0,.05);
+    vertical-align: top;
+  }
+  code {
+    font-size: 0.85rem;
+    background: rgba(0,0,0,0.1);
+    padding: 0.2rem 0.35rem;
+    border-radius: 0.3rem;
+  }
+
+  /* Status Badges */
+  .badge {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .badge.valid { background: rgba(0,230,118,0.12); color: #00e676; }
+  .badge.invalid { background: rgba(255,82,82,0.12); color: #ff5252; }
+
+  /* Legend */
+  .legend {
+    background: color-mix(in oklab, var(--card) 92%, black 8%);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 6px 18px rgba(0,0,0,.25);
+    max-width: 900px;
+    margin: 2.5rem auto 0;
+  }
+  .legend h4 { margin-bottom: 1rem; }
+  .legend ul {
+    color: var(--muted);
+    line-height: 1.6;
+    font-size: .95rem;
+    margin: 0;
+    padding-left: 1.3rem;
+  }
+
+  @keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  tbody tr { animation: fadeInUp .4s ease forwards; }
+</style>
+
+<div class="ledger-wrap">
+  <!-- Header -->
+  <div class="ledger-hero">
+    <h2>⛓️ Blockchain Ledger (Admin View)</h2>
+    <p>Comprehensive blockchain record of all actions — uploads, verifications, and logins — ensuring <strong>complete transparency</strong> and <strong>tamper-proof auditability</strong>.</p>
+  </div>
+
+  {% if ledger_entries and ledger_entries|length > 0 %}
+  <div class="ledger-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Block ID</th>
+          <th>Action Type</th>
+          <th>Actor</th>
+          <th>Timestamp</th>
+          <th>Status</th>
+          <th>Details</th> <!-- ✅ Added new column -->
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in ledger_entries %}
+        <tr>
+          <td><code>#{{ b.block_id }}</code></td>
+          <td>
+            {% if b.action_type == 'upload_evidence' %}
+              <span style="color:var(--yellow);font-weight:600;">📤 Upload</span>
+            {% elif b.action_type == 'verification' %}
+              <span style="color:#00e676;font-weight:600;">🧾 Verification</span>
+            {% elif b.action_type == 'login_success' %}
+              <span style="color:var(--brand);font-weight:600;">🔑 Login</span>
+            {% else %}
+              <span style="color:var(--muted);">{{ b.action_type }}</span>
+            {% endif %}
+          </td>
+          <td>{{ b.actor.full_name if b.actor else 'N/A' }}</td>
+          <td>{{ b.timestamp.strftime("%d %b %Y, %H:%M") }}</td>
+          <td>
+            {% if b.chain_status == 'valid' %}
+              <span class="badge valid">✅ Valid</span>
+            {% else %}
+              <span class="badge invalid">⚠️ Invalid</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if b.details %}
+              {% set details = b.details | safe %}
+              {% if '"result": "tampered"' in details %}
+                <span style="color:#ff5252;font-weight:600;">TAMPER ALERT</span>
+              {% elif '"result": "genuine"' in details %}
+                <span style="color:#00e676;font-weight:600;">Genuine</span>
+              {% elif '"file_name"' in details %}
+                <span style="color:var(--yellow);font-weight:600;">File Record</span>
+              {% else %}
+                <span style="color:var(--muted);">Event</span>
+              {% endif %}
+              <div style="margin-top:0.3rem;">
+                <code style="font-size:0.8rem;opacity:0.85;">{{ details[:120] }}...</code>
+              </div>
+            {% else %}
+              <span style="color:var(--muted);font-size:0.85rem;">No details recorded</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-top:1rem;color:var(--muted);font-size:0.9rem;text-align:center;">
+    ⛓️ Each block is cryptographically linked. Any change to a previous block invalidates the entire chain.
+  </p>
+  {% else %}
+  <p style="color:var(--muted);text-align:center;margin-top:2rem;">No ledger records found yet. Once users perform actions, the blockchain will begin recording entries.</p>
+  {% endif %}
+
+  <!-- Legend -->
+  <div class="legend">
+    <h4>📘 Ledger Interpretation</h4>
+    <ul>
+      <li><strong>Block ID:</strong> Sequential identifier of each blockchain block.</li>
+      <li><strong>Action Type:</strong> Operation recorded (Upload, Verification, Login).</li>
+      <li><strong>Actor:</strong> The user who triggered the blockchain action.</li>
+      <li><strong>Status:</strong> <em>Valid</em> means the chain is intact; <em>Invalid</em> indicates tampering.</li>
+      <li><strong>Details:</strong> JSON metadata snippet (hashes, file name, results, etc.).</li>
+    </ul>
+  </div>
+</div>
+
+{% endblock %}

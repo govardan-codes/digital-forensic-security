@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* ====== VERIFIER LEDGER PAGE ====== */
+.ledger-wrap {
+  width: 100%;
+  background:
+    radial-gradient(1100px 520px at -10% -10%, rgba(255,193,7,.10), transparent 60%),
+    radial-gradient(1100px 520px at 110% 110%, rgba(0,0,139,.08), transparent 60%);
+  border-radius: 18px;
+  padding: 2.5rem 1.5rem 4rem 1.5rem;
+}
+
+/* ====== Header ====== */
+.ledger-header {
+  background: linear-gradient(135deg, var(--blue), var(--navy));
+  color: #fff;
+  border-radius: 18px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  box-shadow: 0 14px 36px rgba(0,0,0,.25);
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+.ledger-header::after {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(900px 360px at -5% -10%, rgba(255,193,7,.25), transparent 60%),
+    radial-gradient(900px 360px at 105% 110%, rgba(255,255,255,.10), transparent 60%);
+  pointer-events: none;
+}
+.ledger-header h1 {
+  font-weight: 900;
+  font-size: 2rem;
+  margin-bottom: .4rem;
+}
+.ledger-header p {
+  max-width: 900px;
+  margin: 0 auto;
+  color: #e7ebff;
+  font-size: 1.05rem;
+}
+
+/* ====== Search Bar ====== */
+.search-bar {
+  background: var(--card);
+  padding: 1rem 1.5rem;
+  border-radius: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  margin-bottom: 2rem;
+}
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: #1a2d3f;
+  color: var(--text);
+  padding: 0.9rem 1.2rem;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+.search-bar button {
+  background: linear-gradient(135deg, var(--yellow), var(--bright-yellow));
+  color: var(--navy);
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 2rem;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  transition: all 0.25s ease;
+}
+.search-bar button:hover {
+  transform: translateY(-2px);
+  background: var(--bright-yellow);
+}
+
+/* ====== Ledger Table ====== */
+.ledger-table {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 1.8rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  overflow-x: auto;
+}
+.ledger-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.ledger-table th {
+  text-align: left;
+  padding: 0.9rem 1rem;
+  color: var(--blue);
+  font-weight: 800;
+  border-bottom: 2px solid var(--ring);
+  letter-spacing: .3px;
+}
+.ledger-table td {
+  padding: 0.85rem 1rem;
+  color: var(--text);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.ledger-table tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+.ledger-table tr:hover {
+  background: rgba(255,221,0,0.05);
+  transition: 0.25s;
+}
+
+/* ====== Status & Result Badges ====== */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.badge.valid { background: rgba(0,230,118,0.12); color: #00e676; }
+.badge.invalid { background: rgba(255,82,82,0.12); color: #ff5252; }
+.badge.genuine { background: rgba(0,230,118,0.1); color: #00e676; }
+.badge.tampered { background: rgba(255,82,82,0.1); color: #ff5252; }
+
+/* ====== Info Section ====== */
+.info-card {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 2rem;
+  margin-top: 2.5rem;
+  box-shadow: 0 8px 28px rgba(0,0,0,.25);
+}
+.info-card h3 {
+  color: var(--blue);
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+.info-card p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+.info-card ul {
+  color: var(--text);
+  line-height: 1.6;
+  margin: 1rem 0 1.5rem 1rem;
+}
+.info-card img {
+  max-width: 460px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.2);
+  opacity: 0.95;
+}
+
+/* ====== Animation ====== */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+tbody tr { animation: fadeInUp .4s ease forwards; }
+
+@media (max-width: 768px) {
+  .ledger-header h1 { font-size: 1.6rem; }
+  .search-bar { flex-direction: column; }
+  .search-bar button { width: 100%; }
+}
+</style>
+
+<div class="ledger-wrap">
+  <!-- Header -->
+  <div class="ledger-header">
+    <h1>⛓️ Blockchain Ledger</h1>
+    <p>Below are all verification records securely stored in the blockchain — cryptographically linked to ensure integrity and transparency.</p>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="🔍 Search by file name, verifier, or action type...">
+    <button type="button" onclick="filterLedger()">Filter</button>
+  </div>
+
+  <!-- Ledger Table -->
+  <div class="ledger-table">
+    <table id="ledgerTable">
+      <thead>
+        <tr>
+          <th>Block ID</th>
+          <th>Action</th>
+          <th>Verifier</th>
+          <th>File Name</th>
+          <th>Result</th>
+          <th>Timestamp</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in ledger_entries %}
+        {% set details = entry.details | safe | tojson %}
+        {% set info = details | loads if details else {} %}
+        <tr>
+          <td><code>#{{ entry.block_id }}</code></td>
+          <td>{{ entry.action_type }}</td>
+          <td>{{ info.verifier if info.verifier else '—' }}</td>
+          <td>{{ info.file_name if info.file_name else '—' }}</td>
+          <td>
+            {% if info.result == 'genuine' %}
+              <span class="badge genuine">Genuine</span>
+            {% elif info.result == 'tampered' %}
+              <span class="badge tampered">Tampered</span>
+            {% else %}
+              <span style="color:var(--muted);">—</span>
+            {% endif %}
+          </td>
+          <td style="color:var(--muted);">{{ entry.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td>
+            {% if entry.chain_status == 'valid' %}
+              <span class="badge valid">Valid</span>
+            {% else %}
+              <span class="badge invalid">Invalid</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if ledger_entries|length == 0 %}
+      <p style="text-align:center; color:var(--muted); margin-top:1rem;">No blockchain entries found.</p>
+    {% endif %}
+  </div>
+
+  <!-- Info Section -->
+  <div class="info-card">
+    <h3>📘 Understanding the Blockchain Ledger</h3>
+    <p>
+      Each entry in this table represents an immutable blockchain block.  
+      The cryptographic links between <code>previous_hash</code> and <code>current_hash</code> ensure tamper-proof data integrity.
+      Any modification breaks this chain, changing its status from <strong>Valid</strong> to <strong>Invalid</strong>.
+    </p>
+
+    <ul>
+      <li>🧩 <strong>Genuine:</strong> Evidence hash matches original blockchain record.</li>
+      <li>⚠️ <strong>Tampered:</strong> Uploaded hash differs from the recorded hash.</li>
+      <li>🔐 <strong>Valid Chain:</strong> Every hash link verified and intact.</li>
+      <li>❌ <strong>Invalid Chain:</strong> Indicates potential modification or break.</li>
+    </ul>
+
+    <div style="text-align:center;">
+      <img src="{{ url_for('static', filename='img/ledger_diagram.png') }}" 
+           alt="Blockchain Ledger Diagram">
+    </div>
+  </div>
+</div>
+
+<!-- JS for live filtering -->
+<script>
+function filterLedger() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const rows = document.querySelectorAll("#ledgerTable tbody tr");
+  rows.forEach(row => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(input) ? "" : "none";
+  });
+}
+</script>
+
+{% endblock %}

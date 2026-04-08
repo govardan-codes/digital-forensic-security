@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  /* ======== VERIFY PAGE ======== */
+  .verify-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 80px);
+  }
+
+  .verify-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 960px;
+    height: 540px;
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+  }
+
+  /* ===== LEFT SECTION ===== */
+  .verify-left {
+    background: linear-gradient(180deg, var(--blue), var(--navy));
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2.5rem 2rem;
+  }
+
+  .verify-left img {
+    width: 340px;
+    height: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .verify-left h3 {
+    color: var(--yellow);
+    font-weight: 800;
+    font-size: 1.45rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .verify-left p {
+    color: #e6ecff;
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 300px;
+  }
+
+  /* ===== RIGHT SECTION ===== */
+  .verify-right {
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2.5rem 3.5rem;
+  }
+
+  .verify-right h2 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--yellow);
+    margin-bottom: 0.6rem;
+    text-align: center;
+  }
+
+  .verify-right h2 span {
+    color: var(--text);
+  }
+
+  .verify-right p.subtitle {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 1.8rem;
+    text-align: center;
+  }
+
+  /* ===== INPUT ===== */
+  .verify-right input[type="text"] {
+    width: 80%;
+    max-width: 400px;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    border: 2px solid #ddd;
+    font-size: 1.2rem;
+    text-align: center;
+    font-weight: 700;
+    background: #fffbe6;
+    letter-spacing: 2px;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+
+  .verify-right input:focus {
+    outline: none;
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25);
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn-primary {
+    background: var(--yellow);
+    color: var(--navy);
+    font-weight: 800;
+    font-size: 1.05rem;
+    border: none;
+    border-radius: 999px;
+    padding: 0.9rem 1.8rem;
+    margin-top: 1.4rem;
+    width: 160px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    transition: background 0.25s ease, transform 0.25s ease;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background: var(--bright-yellow);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: #3ad0ff;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 999px;
+    padding: 0.8rem 1.5rem;
+    margin-top: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background: #007aff;
+    transform: translateY(-2px);
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 1.4rem;
+    font-size: 0.95rem;
+    color: var(--blue);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 950px) {
+    .verify-card {
+      grid-template-columns: 1fr;
+      width: 90%;
+      height: auto;
+    }
+
+    .verify-left {
+      display: none;
+    }
+
+    .verify-right {
+      padding: 2rem 1.5rem;
+    }
+  }
+</style>
+
+<div class="verify-wrapper">
+  <div class="verify-card">
+    <!-- LEFT PANEL -->
+    <div class="verify-left">
+      <img src="{{ url_for('static', filename='img/secure.png') }}" alt="Verification">
+      <h3>We’re almost there!</h3>
+      <p>Verify your identity securely to complete your digital forensic login process.</p>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="verify-right">
+      <h2>Enter Your <span>Secure Code</span></h2>
+      <p class="subtitle">
+        Enter the 10-character code sent to <br>
+        <strong>{{ to_email or session.get('pending_user_email', 'your email') }}</strong>
+      </p>
+
+      <form method="POST" action="{{ url_for('auth_bp.verify_code') }}">
+        <input type="text" name="code" maxlength="10" required placeholder="Enter secure code">
+        <button type="submit" class="btn-primary">Submit</button>
+      </form>
+
+      <button type="button" id="resendBtn" class="btn-secondary">🔁 Resend Code</button>
+      <a href="{{ url_for('auth_bp.login') }}" class="back-link">← Back to Email</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EmailJS Integration ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  (function(){
+    emailjs.init("cDocXB4KP9DiXceV9"); // Your EmailJS public key
+  })();
+
+  const toEmail = "{{ to_email or session.get('pending_user_email', '') }}";
+  const secureCode = "{{ secure_code or session.get('pending_user_code', '') }}";
+
+  // Auto-send the code when the page loads
+  window.addEventListener("load", function(){
+    if (toEmail && secureCode && !sessionStorage.getItem("codeSent")) {
+      emailjs.send("service_oyr30np", "template_vuqjrhf", {
+        to_email: toEmail,
+        secure_code: secureCode
+      }).then(() => {
+        console.log("✅ Verification code sent successfully!");
+        sessionStorage.setItem("codeSent", "true");
+      }).catch(err => console.error("❌ EmailJS send failed:", err));
+    }
+  });
+
+  // Handle manual resend
+  document.getElementById("resendBtn").addEventListener("click", function(){
+    if (!toEmail || !secureCode) {
+      alert("Unable to resend code. Try logging in again.");
+      return;
+    }
+
+    this.disabled = true;
+    this.innerText = "Sending...";
+
+    emailjs.send("service_oyr30np", "template_vuqjrhf", {
+      to_email: toEmail,
+      secure_code: secureCode
+    }).then(() => {
+      this.innerText = "✅ Code Sent!";
+      setTimeout(() => {
+        this.innerText = "🔁 Resend Code";
+        this.disabled = false;
+      }, 3000);
+    }).catch(err => {
+      console.error("❌ Failed to resend code:", err);
+      alert("Failed to resend. Please try again.");
+      this.innerText = "🔁 Resend Code";
+      this.disabled = false;
+    });
+  });
+</script>
+
+{% endblock %}

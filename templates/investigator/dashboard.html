@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  /* ===== Investigator Dashboard ===== */
+  .investigator-rail {
+    width: 100%;
+    background:
+      radial-gradient(1100px 520px at -10% -10%, rgba(255,193,7,.10), transparent 60%),
+      radial-gradient(1100px 520px at 110% 110%, rgba(0,0,139,.06), transparent 60%);
+    border-radius: 18px;
+    padding-bottom: 3rem;
+  }
+
+  /* Header */
+  .dashboard-header {
+    text-align: center;
+    margin: 2rem auto 2.5rem auto;
+  }
+  .dashboard-header h2 {
+    color: var(--blue);
+    font-weight: 900;
+    font-size: 2rem;
+    margin-bottom: .4rem;
+  }
+  .dashboard-header p {
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.4rem;
+    margin: 2rem auto;
+    max-width: 1100px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--ring);
+    border-radius: 16px;
+    padding: 1.6rem 1.4rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .12);
+  }
+  .stat-card h3 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--blue);
+  }
+  .stat-card p {
+    margin: .25rem 0 0;
+    color: var(--muted);
+  }
+
+  /* Action Buttons */
+  .action-buttons {
+    text-align: center;
+    margin: 2.5rem 0 2rem 0;
+  }
+  .action-buttons a {
+    display: inline-block;
+    padding: 0.9rem 2.2rem;
+    border-radius: 40px;
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    transition: transform .25s ease, background .25s ease;
+    margin: 0.5rem;
+  }
+  .btn-upload { background: linear-gradient(135deg, var(--yellow), #ffb400); color: var(--navy); box-shadow: 0 8px 20px rgba(0, 0, 0, .18); }
+  .btn-verify { background: linear-gradient(135deg, #3ad0ff, #007aff); }
+  .btn-ledger { background: linear-gradient(135deg, #ff7a59, #e64a19); }
+  .action-buttons a:hover { transform: translateY(-2px); opacity: .95; }
+
+  /* Activity Section */
+  .activity-card {
+    background: #fff;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.1);
+    padding: 2rem;
+    margin: 0 auto;
+    width: 95%;
+  }
+  .activity-card h4 {
+    color: var(--navy);
+    font-weight: 900;
+    font-size: 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+
+  /* Modern Colorful Table */
+  .activity-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 1rem;
+  }
+  thead tr {
+    background: rgba(0, 0, 139, .06);
+  }
+  th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 0, 0, .06);
+  }
+  th {
+    color: var(--navy);
+    font-weight: 800;
+  }
+  td {
+    color: #222;
+    vertical-align: top;
+  }
+
+  /* Action Type Colors */
+  .action-type {
+    font-weight: 700;
+  }
+  .action-type.upload {
+    color: #007bff;
+  }
+  .action-type.verification {
+    color: #2ecc71;
+  }
+
+  /* Status */
+  .status-valid {
+    color: #00c853;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .status-valid::before {
+    content: '✅';
+  }
+
+  /* Details Column */
+  .details-cell {
+    font-family: monospace;
+    font-size: 0.95rem;
+    background: #f8f9fc;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-x: auto;
+    max-height: 160px;
+  }
+
+  /* Hash Column */
+  .hash-cell {
+    font-family: monospace;
+    font-size: 0.95rem;
+    color: #333;
+  }
+
+  /* Result Labels */
+  .result-good {
+    color: #00c853;
+    font-weight: 700;
+  }
+  .result-alert {
+    color: #ff1744;
+    font-weight: 700;
+  }
+
+  @media (max-width: 900px) {
+    .activity-card { width: 100%; padding: 1.5rem; }
+    .activity-table { font-size: 0.9rem; }
+    th, td { padding: 0.8rem; }
+  }
+</style>
+
+<div class="investigator-rail">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h2>🧑‍💼 Investigator Dashboard</h2>
+    <p>Welcome, <strong>{{ current_user.full_name }}</strong> 👋 — manage and verify your forensic evidence securely.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>📁 {{ uploads }}</h3>
+      <p>Files Uploaded</p>
+    </div>
+    <div class="stat-card">
+      <h3>🧾 {{ verifications }}</h3>
+      <p>Verifications Performed</p>
+    </div>
+    <div class="stat-card">
+      {% if last_upload %}
+        <h3 style="font-size:1.1rem;">{{ last_upload.file_name }}</h3>
+        <p>Last Upload: {{ last_upload.upload_timestamp.strftime("%d %b %Y, %H:%M") }}</p>
+      {% else %}
+        <p>No uploads yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="action-buttons">
+    <a href="{{ url_for('investigator_bp.upload_evidence') }}" class="btn-upload">📤 Upload Evidence</a>
+    <a href="{{ url_for('investigator_bp.verify_evidence') }}" class="btn-verify">🧩 Verify Evidence</a>
+    <a href="{{ url_for('investigator_bp.view_ledger') }}" class="btn-ledger">🔗 View Blockchain Ledger</a>
+  </div>
+
+  <!-- Activity Table -->
+  <div class="activity-card">
+    <h4>Recent Blockchain Activity</h4>
+
+    {% if recent_activity and recent_activity|length > 0 %}
+    <div style="overflow-x:auto;">
+      <table class="activity-table">
+        <thead>
+          <tr>
+            <th>Block ID</th>
+            <th>Action Type</th>
+            <th>Timestamp</th>
+            <th>Hash (Partial)</th>
+            <th>Status</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for block in recent_activity %}
+          <tr>
+            <td>#{{ block.block_id }}</td>
+            <td class="action-type {% if block.action_type == 'upload' or block.action_type == 'Upload_evidence' %}upload{% else %}verification{% endif %}">
+              {% if block.action_type == 'upload' or block.action_type == 'Upload_evidence' %}
+                📤 Upload
+              {% else %}
+                📄 Verification
+              {% endif %}
+            </td>
+            <td>{{ block.timestamp.strftime("%d %b %Y, %H:%M") }}</td>
+            <td class="hash-cell">{{ block.details[:35] }}...</td>
+            <td class="status-valid">Valid</td>
+            <td>
+              {% if '"result": "genuine"' in block.details %}
+                <div class="result-good">Genuine</div>
+              {% elif '"result": "tampered"' in block.details %}
+                <div class="result-alert">TAMPER ALERT</div>
+              {% else %}
+                <div style="font-weight:600;">File Record</div>
+              {% endif %}
+              <div class="details-cell">{{ block.details | safe }}</div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p style="color:var(--muted);text-align:center;">No recent blockchain activity yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

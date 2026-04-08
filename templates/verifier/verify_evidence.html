@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  /* ===== Verify Evidence Page ===== */
+  .verify-rail{
+    width:100%;
+    background:
+      radial-gradient(1100px 520px at -10% -10%, rgba(255,193,7,.10), transparent 60%),
+      radial-gradient(1100px 520px at 110% 110%, rgba(0,0,139,.06), transparent 60%);
+    border-radius:18px;
+    padding-bottom:3rem;
+  }
+
+  .hero{
+    background:linear-gradient(90deg, var(--blue), var(--navy));
+    color:#fff; border-radius:18px; box-shadow:0 16px 40px rgba(0,0,0,.22);
+    padding:3rem 2rem; text-align:center; margin-bottom:2.5rem; position:relative; overflow:hidden;
+  }
+  .hero h1{font-weight:900;font-size:2rem;margin-bottom:.5rem;}
+  .hero p{color:#e7ebff;max-width:900px;margin:0 auto;font-size:1.05rem;}
+
+  .upload-card{
+    background:#fff; border:1px solid var(--ring); border-radius:18px;
+    box-shadow:0 12px 28px rgba(0,0,0,.08); padding:2.5rem 2rem; text-align:center;
+    max-width:850px; margin:0 auto 2rem auto;
+  }
+
+  /* Full-width, no-overflow drop zone */
+  .upload-box{
+    display:flex; width:100%; box-sizing:border-box; min-height:160px;
+    border:2px dashed var(--blue); border-radius:16px; padding:2.4rem 1rem;
+    cursor:pointer; transition:all .3s ease; color:var(--muted); font-size:1.05rem;
+    align-items:center; justify-content:center; flex-direction:column; background:#fff;
+  }
+  .upload-box:hover{border-color:var(--yellow);background:rgba(255,193,7,.06);}
+  .upload-box:focus{outline:3px solid rgba(255,193,7,.25); outline-offset:4px;}
+  .upload-box.dragover{outline:4px solid rgba(255,193,7,.45); outline-offset:5px;}
+
+  #file-name{margin-top:1rem;color:var(--blue);font-weight:700;word-break:break-all;}
+
+  .btn-verify{
+    background:var(--yellow); color:var(--navy); border:none; border-radius:40px;
+    padding:0.9rem 2.5rem; font-weight:800; font-size:1rem; cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,0,0,.18); transition:transform .25s ease, background .25s ease;
+    margin-top:1.3rem;
+  }
+  .btn-verify:hover{background:var(--bright-yellow);transform:translateY(-2px);}
+
+  /* Progress bar */
+  .progress-wrap{display:none; width:100%; max-width:520px; margin:1rem auto 0; height:10px;
+                 background:#e9eef6; border-radius:999px; overflow:hidden;}
+  .progress-inner{height:100%; width:0%; background:linear-gradient(90deg, var(--blue), var(--yellow));}
+
+  .info-section{
+    background:linear-gradient(145deg,#001652,var(--navy)); border-radius:18px;
+    box-shadow:0 14px 40px rgba(0,0,0,.25); max-width:950px; margin:0 auto;
+    padding:2.8rem 2.2rem; color:#e7ecff; display:grid; grid-template-columns:1.1fr 1fr;
+    align-items:center; gap:2.5rem;
+  }
+  .info-section h3{color:var(--yellow); font-weight:900; font-size:1.3rem; margin-bottom:1rem; display:flex; align-items:center; gap:.4rem;}
+  .info-section ol{margin:0; padding-left:1.3rem; line-height:1.7; color:#e7ecff; font-size:1rem;}
+  .info-section p{color:#d6dcff; font-size:.95rem; margin-top:1rem;}
+  .info-section strong{color:#fff;}
+  .info-img-box{background:#fff; border-radius:16px; padding:1rem; box-shadow:0 10px 26px rgba(0,0,0,.25); display:flex; justify-content:center; align-items:center;}
+  .info-img-box img{width:100%; max-width:400px; border-radius:12px;}
+
+  @media(max-width:900px){
+    .info-section{grid-template-columns:1fr; text-align:left; padding:2rem 1.5rem;}
+    .info-img-box{margin-top:1.4rem;}
+  }
+</style>
+
+<div class="verify-rail">
+  <!-- Hero -->
+  <section class="hero">
+    <h1>🧩 Verify Digital Evidence</h1>
+    <p>Upload a digital evidence file to validate its authenticity through blockchain-based integrity verification.</p>
+  </section>
+
+  <!-- Upload Card -->
+  <div class="upload-card">
+    <form method="POST" enctype="multipart/form-data" onsubmit="showProgressBar()">
+      <!-- Use a DIV as button to avoid label+JS double-open -->
+      <div id="dropZone" class="upload-box" role="button" tabindex="0" aria-controls="file-upload" aria-label="Choose a file or drag and drop">
+        <div style="font-size:1.8rem; margin-bottom:.25rem;">📁</div>
+        <div><strong>Click to choose a file</strong> or drag & drop it here</div>
+        <small>Supported: images, PDFs, text, and archives</small>
+      </div>
+
+      <input id="file-upload" type="file" name="file" required style="display:none;" onchange="previewFileName(event)">
+      <p id="file-name"></p>
+
+      <button type="submit" class="btn-verify">🔍 Start Verification</button>
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-inner" id="progressInner"></div>
+      </div>
+    </form>
+  </div>
+
+  <!-- How It Works + Image -->
+  <div class="info-section">
+    <div>
+      <h3>⚙️ How It Works</h3>
+      <ol>
+        <li>Upload the evidence file (any supported format).</li>
+        <li>The system computes a <strong>SHA-256 hash</strong> of your uploaded file.</li>
+        <li>It retrieves the original hash from the blockchain ledger.</li>
+        <li>If both hashes match → ✅ <strong>Authentic</strong>.</li>
+        <li>If they differ → ⚠️ <strong>Tampered</strong>.</li>
+        <li>The result is permanently recorded on the blockchain.</li>
+      </ol>
+      <p>Every verification is logged with your identity, timestamp, and result for full transparency.</p>
+    </div>
+    <div class="info-img-box">
+      <img src="{{ url_for('static', filename='img/evidence_verify.png') }}" alt="Evidence Verification Illustration">
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+  const fileInput = document.getElementById('file-upload');
+  const dropZone  = document.getElementById('dropZone');
+  const fileNameP = document.getElementById('file-name');
+
+  function previewFileName(e){
+    const f = e.target.files[0];
+    fileNameP.textContent = f ? `📄 ${f.name}` : '';
+  }
+
+  function showProgressBar(){
+    const bar = document.getElementById('progressWrap');
+    const inner = document.getElementById('progressInner');
+    if(!bar || !inner) return;
+    bar.style.display='block'; inner.style.width='0%';
+    let w = 0; const t = setInterval(()=>{
+      w += 12; inner.style.width = Math.min(w,100) + '%';
+      if(w>=100) clearInterval(t);
+    }, 120);
+  }
+
+  // Single click / keyboard open (no label 'for', so no double-open)
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+  });
+
+  // Drag & drop
+  ['dragenter','dragover'].forEach(evt =>
+    dropZone.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); dropZone.classList.add('dragover'); })
+  );
+  ['dragleave','drop'].forEach(evt =>
+    dropZone.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('dragover'); })
+  );
+  dropZone.addEventListener('drop', (e) => {
+    const files = e.dataTransfer.files;
+    if (files && files.length) {
+      fileInput.files = files;
+      previewFileName({ target: fileInput });
+    }
+  });
+</script>
+
+{% endblock %}
