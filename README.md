@@ -1,5 +1,4 @@
 
-![Digital Forensic Security Banner](https://raw.githubusercontent.com/govardan-codes/digital-forensic-security/main/banner.png)
 # 🛡️ Digital Forensic Security 🔍
 
 > Forensic Analysis • Cybersecurity • Evidence Integrity
